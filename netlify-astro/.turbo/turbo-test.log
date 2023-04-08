@@ -1,0 +1,31 @@
+[33m@astrojs/netlify:test: [0mcache hit, replaying output [2m23a3b89cec6a8738[0m
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m> @astrojs/netlify@2.2.0 test /home/andre/repos/astro/packages/integrations/netlify
+[33m@astrojs/netlify:test: [0m> npm run test-fn
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m> @astrojs/netlify@2.2.0 test-fn
+[33m@astrojs/netlify:test: [0m> mocha --exit --timeout 20000 test/functions/
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m  404 page
+[33m@astrojs/netlify:test: [0m    ✔ 404 route is included in the redirect file
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m  Base64 Responses
+[33m@astrojs/netlify:test: [0m    ✔ Can return base64 encoded strings (74ms)
+[33m@astrojs/netlify:test: [0m    ✔ Can define custom binaryMediaTypes
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m  Cookies
+[33m@astrojs/netlify:test: [0m    ✔ Can set multiple (76ms)
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m  Dynamic pages
+[33m@astrojs/netlify:test: [0m    ✔ Dynamic pages are included in the redirects file
+[33m@astrojs/netlify:test: [0m    ✔ Prerendered routes are also included using placeholder syntax
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m  Mixed Prerendering with SSR
+[33m@astrojs/netlify:test: [0m    ✔ Wildcard 404 is sorted last
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m
+[33m@astrojs/netlify:test: [0m  7 passing (15s)
+[33m@astrojs/netlify:test: [0m
