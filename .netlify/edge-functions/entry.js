@@ -25,7 +25,7 @@ var __privateMethod = (obj, member, method) => {
   return method;
 };
 
-// .netlify/edge-functions/chunks/astro.e44c8a60.mjs
+// .netlify/edge-functions/chunks/astro.0990e9f3.mjs
 function Mime$1() {
   this._types = /* @__PURE__ */ Object.create(null);
   this._extensions = /* @__PURE__ */ Object.create(null);
@@ -799,7 +799,7 @@ function createComponent(arg1, moduleId) {
     return createComponentWithOptions(arg1);
   }
 }
-var ASTRO_VERSION = "2.2.0";
+var ASTRO_VERSION = "2.2.1";
 function createAstroGlobFn() {
   const globHandler = (importMetaGlobResult, globValue) => {
     let allEntries = [...Object.values(importMetaGlobResult)];
@@ -1562,27 +1562,30 @@ var SlotString = class extends HTMLString {
 function isSlotString(str) {
   return !!str[slotString];
 }
-async function renderSlot(result, slotted, fallback) {
+async function* renderSlot(result, slotted, fallback) {
   if (slotted) {
     let iterator = renderChild(typeof slotted === "function" ? slotted(result) : slotted);
-    let content = "";
-    let instructions = null;
-    for await (const chunk of iterator) {
-      if (typeof chunk.type === "string") {
-        if (instructions === null) {
-          instructions = [];
-        }
-        instructions.push(chunk);
-      } else {
-        content += chunk;
-      }
-    }
-    return markHTMLString(new SlotString(content, instructions));
+    yield* iterator;
   }
   if (fallback) {
-    return renderSlot(result, fallback);
+    yield* renderSlot(result, fallback);
   }
-  return "";
+}
+async function renderSlotToString(result, slotted, fallback) {
+  let content = "";
+  let instructions = null;
+  let iterator = renderSlot(result, slotted, fallback);
+  for await (const chunk of iterator) {
+    if (typeof chunk.type === "string") {
+      if (instructions === null) {
+        instructions = [];
+      }
+      instructions.push(chunk);
+    } else {
+      content += chunk;
+    }
+  }
+  return markHTMLString(new SlotString(content, instructions));
 }
 async function renderSlots(result, slots = {}) {
   let slotInstructions = null;
@@ -1590,7 +1593,7 @@ async function renderSlots(result, slots = {}) {
   if (slots) {
     await Promise.all(
       Object.entries(slots).map(
-        ([key, value]) => renderSlot(result, value).then((output) => {
+        ([key, value]) => renderSlotToString(result, value).then((output) => {
           if (output.instructions) {
             if (slotInstructions === null) {
               slotInstructions = [];
@@ -1930,7 +1933,7 @@ async function renderHTMLElement(result, constructor, props, slots) {
     attrHTML += ` ${attr}="${toAttributeString(await props[attr])}"`;
   }
   return markHTMLString(
-    `<${name}${attrHTML}>${await renderSlot(result, slots == null ? void 0 : slots.default)}</${name}>`
+    `<${name}${attrHTML}>${await renderSlotToString(result, slots == null ? void 0 : slots.default)}</${name}>`
   );
 }
 function getHTMLElementName(constructor) {
@@ -2091,7 +2094,7 @@ If you're still stuck, please open an issue on GitHub or join us at https://astr
     }
   } else {
     if (metadata.hydrate === "only") {
-      html = await renderSlot(result, slots == null ? void 0 : slots.fallback);
+      html = await renderSlotToString(result, slots == null ? void 0 : slots.fallback);
     } else {
       ({ html, attrs } = await renderer.ssr.renderToStaticMarkup.call(
         { result },
@@ -2186,7 +2189,7 @@ function sanitizeElementName(tag) {
   return tag.trim().split(unsafe)[0].trim();
 }
 async function renderFragmentComponent(result, slots = {}) {
-  const children = await renderSlot(result, slots == null ? void 0 : slots.default);
+  const children = await renderSlotToString(result, slots == null ? void 0 : slots.default);
   if (children == null) {
     return children;
   }
@@ -2318,8 +2321,9 @@ async function bufferHeadContent(result) {
   }
 }
 async function renderPage$1(result, componentFactory, props, children, streaming, route) {
-  var _a2;
+  var _a2, _b;
   if (!isAstroComponentFactory(componentFactory)) {
+    result._metadata.headInTree = ((_a2 = result.componentMetadata.get(componentFactory.moduleId)) == null ? void 0 : _a2.containsHead) ?? false;
     const pageProps = { ...props ?? {}, "server:root": true };
     let output;
     let head = "";
@@ -2361,7 +2365,7 @@ async function renderPage$1(result, componentFactory, props, children, streaming
       ])
     });
   }
-  result._metadata.headInTree = ((_a2 = result.componentMetadata.get(componentFactory.moduleId)) == null ? void 0 : _a2.containsHead) ?? false;
+  result._metadata.headInTree = ((_b = result.componentMetadata.get(componentFactory.moduleId)) == null ? void 0 : _b.containsHead) ?? false;
   const factoryReturnValue = await componentFactory(result, props, children);
   const factoryIsHeadAndContent = isHeadAndContent(factoryReturnValue);
   if (isRenderTemplateResult(factoryReturnValue) || factoryIsHeadAndContent) {
@@ -2764,7 +2768,9 @@ var Slots = class {
       const expression = getFunctionExpression(component);
       if (expression) {
         const slot = () => expression(...args);
-        return await renderSlot(result, slot).then((res) => res != null ? String(res) : res);
+        return await renderSlotToString(result, slot).then(
+          (res) => res != null ? String(res) : res
+        );
       }
       if (typeof component === "function") {
         return await renderJSX(result, component(...args)).then(
@@ -2772,7 +2778,7 @@ var Slots = class {
         );
       }
     }
-    const content = await renderSlot(result, __privateGet(this, _slots)[name]);
+    const content = await renderSlotToString(result, __privateGet(this, _slots)[name]);
     const outHTML = stringifyChunk(result, content);
     return outHTML;
   }
@@ -3849,7 +3855,7 @@ var server_default = {
   renderToStaticMarkup
 };
 
-// .netlify/edge-functions/chunks/pages/all.129bb316.mjs
+// .netlify/edge-functions/chunks/pages/all.e42041b3.mjs
 var $$Astro = createAstro();
 var $$Index = createComponent(async ($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
