@@ -25,7 +25,7 @@ var __privateMethod = (obj, member, method) => {
   return method;
 };
 
-// .netlify/edge-functions/chunks/astro.79450bfb.mjs
+// .netlify/edge-functions/chunks/astro.e44c8a60.mjs
 function Mime$1() {
   this._types = /* @__PURE__ */ Object.create(null);
   this._extensions = /* @__PURE__ */ Object.create(null);
@@ -763,7 +763,60 @@ function* getSetCookiesFromResponse(response) {
   }
   return [];
 }
+function validateArgs(args) {
+  if (args.length !== 3)
+    return false;
+  if (!args[0] || typeof args[0] !== "object")
+    return false;
+  return true;
+}
+function baseCreateComponent(cb, moduleId) {
+  var _a2;
+  const name = ((_a2 = moduleId == null ? void 0 : moduleId.split("/").pop()) == null ? void 0 : _a2.replace(".astro", "")) ?? "";
+  const fn = (...args) => {
+    if (!validateArgs(args)) {
+      throw new AstroError({
+        ...AstroErrorData.InvalidComponentArgs,
+        message: AstroErrorData.InvalidComponentArgs.message(name)
+      });
+    }
+    return cb(...args);
+  };
+  Object.defineProperty(fn, "name", { value: name, writable: false });
+  fn.isAstroComponentFactory = true;
+  fn.moduleId = moduleId;
+  return fn;
+}
+function createComponentWithOptions(opts) {
+  const cb = baseCreateComponent(opts.factory, opts.moduleId);
+  cb.propagation = opts.propagation;
+  return cb;
+}
+function createComponent(arg1, moduleId) {
+  if (typeof arg1 === "function") {
+    return baseCreateComponent(arg1, moduleId);
+  } else {
+    return createComponentWithOptions(arg1);
+  }
+}
 var ASTRO_VERSION = "2.2.0";
+function createAstroGlobFn() {
+  const globHandler = (importMetaGlobResult, globValue) => {
+    let allEntries = [...Object.values(importMetaGlobResult)];
+    if (allEntries.length === 0) {
+      throw new Error(`Astro.glob(${JSON.stringify(globValue())}) - no matches found.`);
+    }
+    return Promise.all(allEntries.map((fn) => fn()));
+  };
+  return globHandler;
+}
+function createAstro(site) {
+  return {
+    site: site ? new URL(site) : void 0,
+    generator: `Astro v${ASTRO_VERSION}`,
+    glob: createAstroGlobFn()
+  };
+}
 function getHandlerFromModule(mod, method) {
   if (mod[method]) {
     return mod[method];
@@ -1085,7 +1138,7 @@ function internalSpreadAttributes(values, shouldEscape = true) {
   return markHTMLString(output);
 }
 function renderElement$1(name, { props: _props, children = "" }, shouldEscape = true) {
-  const { lang: _2, "data-astro-id": astroId, "define:vars": defineVars, ...props } = _props;
+  const { lang: _, "data-astro-id": astroId, "define:vars": defineVars, ...props } = _props;
   if (defineVars) {
     if (name === "style") {
       delete props["is:global"];
@@ -1121,6 +1174,9 @@ function renderAllHeadContent(result) {
     }
   }
   return markHTMLString(content);
+}
+function* renderHead(result) {
+  yield { type: "head", result };
 }
 function* maybeRenderHead(result) {
   if (result._metadata.hasRenderedHead) {
@@ -2161,7 +2217,6 @@ function renderComponent(result, displayName, Component, props, slots = {}) {
 }
 function renderComponentToIterable(result, displayName, Component, props, slots = {}) {
   const renderResult = renderComponent(result, displayName, Component, props, slots);
-  console.log(renderResult);
   if (isAstroComponentInstance(renderResult)) {
     return renderResult.render();
   }
@@ -3763,7 +3818,7 @@ callEndpoint_fn = async function(request, routeData, mod, status = 200) {
     return response;
   }
 };
-var slotName = (str) => str.trim().replace(/[-_]([a-z])/g, (_2, w) => w.toUpperCase());
+var slotName = (str) => str.trim().replace(/[-_]([a-z])/g, (_, w) => w.toUpperCase());
 async function check(Component, props, { default: children = null, ...slotted } = {}) {
   if (typeof Component !== "function")
     return false;
@@ -3794,10 +3849,31 @@ var server_default = {
   renderToStaticMarkup
 };
 
-// .netlify/edge-functions/chunks/prerender.7cd2bd0f.mjs
-var noop = () => {
-};
-var _ = noop;
+// .netlify/edge-functions/chunks/pages/all.129bb316.mjs
+var $$Astro = createAstro();
+var $$Index = createComponent(async ($$result, $$props, $$slots) => {
+  const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
+  Astro2.self = $$Index;
+  return renderTemplate`<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+		<meta name="viewport" content="width=device-width">
+		<meta name="generator"${addAttribute(Astro2.generator, "content")}>
+		<title>Astro</title>
+	${renderHead($$result)}</head>
+	<body>
+		<h1>Astro</h1>
+	</body></html>`;
+}, "/home/andre/repos/netlify-edge-astro-example/src/pages/index.astro");
+var $$file = "/home/andre/repos/netlify-edge-astro-example/src/pages/index.astro";
+var $$url = "";
+var _page0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  __proto__: null,
+  default: $$Index,
+  file: $$file,
+  url: $$url
+}, Symbol.toStringTag, { value: "Module" }));
 
 // .netlify/edge-functions/entry.mjs
 var clientAddressSymbol2 = Symbol.for("astro.clientAddress");
@@ -3830,9 +3906,9 @@ var adapter = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.definePropert
   __proto__: null,
   createExports
 }, Symbol.toStringTag, { value: "Module" }));
-var pageMap = /* @__PURE__ */ new Map([["src/pages/index.astro", _]]);
+var pageMap = /* @__PURE__ */ new Map([["src/pages/index.astro", _page0]]);
 var renderers = [Object.assign({ "name": "astro:jsx", "serverEntrypoint": "astro/jsx/server.js", "jsxImportSource": "astro" }, { ssr: server_default })];
-var _manifest2 = Object.assign(deserializeManifest({ "adapterName": "@astrojs/netlify/edge-functions", "routes": [{ "file": "index.html", "links": [], "scripts": [], "routeData": { "route": "/", "type": "page", "pattern": "^\\/$", "segments": [], "params": [], "component": "src/pages/index.astro", "pathname": "/", "prerender": true, "_meta": { "trailingSlash": "ignore" } } }], "base": "/", "markdown": { "drafts": false, "syntaxHighlight": "shiki", "shikiConfig": { "langs": [], "theme": "github-dark", "wrap": false }, "remarkPlugins": [], "rehypePlugins": [], "remarkRehype": {}, "gfm": true, "smartypants": true }, "pageMap": null, "componentMetadata": [["/home/andre/repos/astro/packages/integrations/netlify/test/edge-functions/fixtures/prerender/src/pages/index.astro", { "propagation": "none", "containsHead": true }]], "renderers": [], "entryModules": { "\0@astrojs-ssr-virtual-entry": "_@astrojs-ssr-virtual-entry.mjs", "astro:scripts/before-hydration.js": "" }, "assets": ["/index.html"] }), {
+var _manifest2 = Object.assign(deserializeManifest({ "adapterName": "@astrojs/netlify/edge-functions", "routes": [{ "file": "", "links": [], "scripts": [], "routeData": { "route": "/", "type": "page", "pattern": "^\\/$", "segments": [], "params": [], "component": "src/pages/index.astro", "pathname": "/", "prerender": false, "_meta": { "trailingSlash": "ignore" } } }], "base": "/", "markdown": { "drafts": false, "syntaxHighlight": "shiki", "shikiConfig": { "langs": [], "theme": "github-dark", "wrap": false }, "remarkPlugins": [], "rehypePlugins": [], "remarkRehype": {}, "gfm": true, "smartypants": true }, "pageMap": null, "componentMetadata": [["/home/andre/repos/netlify-edge-astro-example/src/pages/index.astro", { "propagation": "none", "containsHead": true }]], "renderers": [], "entryModules": { "\0@astrojs-ssr-virtual-entry": "_@astrojs-ssr-virtual-entry.mjs", "astro:scripts/before-hydration.js": "" }, "assets": ["/favicon.svg"] }), {
   pageMap,
   renderers
 });
