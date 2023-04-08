@@ -3881,17 +3881,18 @@ var _page0 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty
   url: $$url
 }, Symbol.toStringTag, { value: "Module" }));
 
-// .netlify/edge-functions/entry.js
+// .netlify/edge-functions/entry.mjs
 var clientAddressSymbol2 = Symbol.for("astro.clientAddress");
 function createExports(manifest) {
   const app = new App(manifest);
-  const handler = async (request) => {
+  const handler = async (request, context) => {
+    var _a2;
     const url = new URL(request.url);
     if (manifest.assets.has(url.pathname)) {
       return;
     }
     if (app.match(request)) {
-      const ip = request.headers.get("x-nf-client-connection-ip");
+      const ip = request.headers.get("x-nf-client-connection-ip") || (context == null ? void 0 : context.ip) || ((_a2 = context == null ? void 0 : context.remoteAddr) == null ? void 0 : _a2.hostname);
       Reflect.set(request, clientAddressSymbol2, ip);
       const response = await app.render(request);
       if (app.setCookieHeaders) {
